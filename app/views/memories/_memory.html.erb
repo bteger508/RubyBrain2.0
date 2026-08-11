@@ -1,0 +1,30 @@
+<div id="<%= dom_id memory %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Title:</strong>
+    <%= memory.title %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Description:</strong>
+    <%= memory.description %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Archived:</strong>
+    <%= memory.archived? ? "Yes" : "No" %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Superseded by:</strong>
+    <%= memory.superseded_by_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Forgotten:</strong>
+    <%= memory.forgotten? ? "Yes" : "No" %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Last recalled at:</strong>
+    <%= memory.last_recalled_at %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Recall count:</strong>
+    <%= memory.recall_count %>
+  </div>
+</div>

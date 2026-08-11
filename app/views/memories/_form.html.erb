@@ -1,0 +1,52 @@
+<%= form_with(model: memory, class: "contents") do |form| %>
+  <% if memory.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(memory.errors.count, "error") %> prohibited this memory from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% memory.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :title %>
+    <%= form.text_field :title, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": memory.errors[:title].none?, "border-red-400 focus:outline-red-600": memory.errors[:title].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :description %>
+    <%= form.textarea :description, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": memory.errors[:description].none?, "border-red-400 focus:outline-red-600": memory.errors[:description].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :archived %>
+    <%= form.checkbox :archived, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": memory.errors[:archived].none?, "border-red-400 focus:outline-red-600": memory.errors[:archived].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :superseded_by_id %>
+    <%= form.text_field :superseded_by_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": memory.errors[:superseded_by_id].none?, "border-red-400 focus:outline-red-600": memory.errors[:superseded_by_id].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :forgotten %>
+    <%= form.checkbox :forgotten, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": memory.errors[:forgotten].none?, "border-red-400 focus:outline-red-600": memory.errors[:forgotten].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :last_recalled_at %>
+    <%= form.datetime_field :last_recalled_at, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": memory.errors[:last_recalled_at].none?, "border-red-400 focus:outline-red-600": memory.errors[:last_recalled_at].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :recall_count %>
+    <%= form.number_field :recall_count, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": memory.errors[:recall_count].none?, "border-red-400 focus:outline-red-600": memory.errors[:recall_count].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>
