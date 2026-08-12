@@ -1,20 +1,21 @@
 # Record a memory for later recall.
 #
-# Recalls and checks for near duplicates first. If there are any duplicates, the
-# new memory supersedes the old one, so future recalls return the new memory.
-class RecordTool < MCP::Tool
+# Checks for near duplicates first. If there are any, the new memory supersedes
+# them, so future recalls return this memory rather than the phrasing it replaced.
+class RecordTool < ApplicationTool
   tool_name "record"
   title "Record memory"
   description <<~TEXT
     Record a memory for later recall. Checks for near-duplicate memories first;
-    when one is found, the new memory supersedes it.
+    any it finds are superseded by this one, so recalls return the newest version
+    of a fact. Returns the recorded memory and whatever it replaced.
   TEXT
 
   input_schema(
     properties: {
       title: {
         type: "string",
-        description: "Short, self-contained summary of the memory."
+        description: "Short, self-contained summary of the memory. Near-duplicate detection compares titles, so state the fact here rather than a label for it."
       },
       description: {
         type: "string",
@@ -31,8 +32,13 @@ class RecordTool < MCP::Tool
   )
 
   def self.call(title:, description:, server_context: nil)
-    # TODO: search for near duplicates, then create the memory and supersede any
-    # duplicate it replaces.
-    MCP::Tool::Response.new([ { type: "text", text: "record is not implemented yet" } ])
+    memory, superseded = Memory.record!(title: title, description: description)
+
+    success(
+      memory: serialize(memory),
+      superseded: superseded.map { |replaced| serialize(replaced) }
+    )
+  rescue ActiveRecord::RecordInvalid => error
+    failure("Could not record that memory: #{error.record.errors.full_messages.to_sentence}.")
   end
 end

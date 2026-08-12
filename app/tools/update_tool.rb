@@ -1,20 +1,21 @@
 # Update a memory by supersession.
 #
-# Nothing is edited in place: the new memory is recorded, and the old memory is
-# linked to it through the old memory's superseded_by foreign key.
-class UpdateTool < MCP::Tool
+# Nothing is edited in place: the new memory is recorded, and the old one is
+# linked forward to it, so the history of a changing fact stays readable.
+class UpdateTool < ApplicationTool
   tool_name "update"
   title "Update memory"
   description <<~TEXT
-    Update a memory by supersession. Records the new memory and links the old one
-    to it, so the old memory stays readable as history.
+    Update a memory by recording a new version of it and linking the old one
+    forward. The old memory is preserved but stops being recalled. Use this when
+    a remembered fact has changed; use forget when it was simply wrong.
   TEXT
 
   input_schema(
     properties: {
       id: {
         type: "integer",
-        description: "ID of the memory being superseded."
+        description: "ID of the memory being superseded, as returned by recall."
       },
       title: {
         type: "string",
@@ -35,7 +36,24 @@ class UpdateTool < MCP::Tool
   )
 
   def self.call(id:, title:, description:, server_context: nil)
-    # TODO: record the new memory, then point the old memory's superseded_by at it.
-    MCP::Tool::Response.new([ { type: "text", text: "update is not implemented yet" } ])
+    superseded = Memory.find(id)
+
+    if superseded.superseded_by_id
+      return failure(
+        "Memory #{id} was already superseded by memory #{superseded.superseded_by_id}. Update that one instead."
+      )
+    end
+
+    memory = Memory.transaction do
+      Memory.create!(title: title, description: description).tap do |replacement|
+        superseded.supersede_with!(replacement)
+      end
+    end
+
+    success(memory: serialize(memory), superseded: serialize(superseded))
+  rescue ActiveRecord::RecordNotFound
+    failure("No memory with id #{id}.")
+  rescue ActiveRecord::RecordInvalid => error
+    failure("Could not update that memory: #{error.record.errors.full_messages.to_sentence}.")
   end
 end

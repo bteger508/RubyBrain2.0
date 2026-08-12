@@ -11,5 +11,16 @@ module ActiveSupport
     fixtures :all
 
     # Add more helper methods to be used by all tests here...
+
+    # Tools answer with a single text block, holding a JSON document on success
+    # and a plain sentence on failure.
+    def tool_json(response)
+      # Rooted, since bare JSON resolves to ActiveSupport::JSON in here.
+      ::JSON.parse(tool_text(response), symbolize_names: true)
+    end
+
+    def tool_text(response)
+      response.content.first[:text]
+    end
   end
 end

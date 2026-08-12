@@ -18,11 +18,24 @@ class McpControllerTest < ActionDispatch::IntegrationTest
     assert_equal %w[ title description ], record["inputSchema"]["required"]
   end
 
-  test "calling a tool returns its stub" do
-    result = rpc("tools/call", name: "recall", arguments: {})
+  test "records and recalls a memory over the wire" do
+    recorded = rpc("tools/call", name: "record",
+      arguments: { title: "Brain deploys with Kamal", description: "One command." })
+    assert_not recorded["isError"]
+
+    result = rpc("tools/call", name: "recall", arguments: { query: "Kamal" })
 
     assert_not result["isError"]
-    assert_equal "recall is not implemented yet", result["content"].first["text"]
+    recalled = JSON.parse(result["content"].first["text"])
+    assert_equal 1, recalled["count"]
+    assert_equal "Brain deploys with Kamal", recalled["memories"].first["title"]
+  end
+
+  test "surfaces a tool failure as a tool error, not a protocol error" do
+    result = rpc("tools/call", name: "forget", arguments: { id: 999_999 })
+
+    assert result["isError"], "a bad argument should fail the tool, not the JSON-RPC call"
+    assert_match(/999999/, result["content"].first["text"])
   end
 
   test "rejects an unknown tool" do
