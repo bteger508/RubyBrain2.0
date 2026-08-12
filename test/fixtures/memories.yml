@@ -1,19 +1,3 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
-  title: MyString
-  description: MyText
-  archived: false
-  superseded_by: one
-  forgotten: false
-  last_recalled_at: 2026-08-11 23:46:02
-  recall_count: 1
-
-two:
-  title: MyString
-  description: MyText
-  archived: false
-  superseded_by: two
-  forgotten: false
-  last_recalled_at: 2026-08-11 23:46:02
-  recall_count: 1
+# Intentionally empty. Recall and near-duplicate detection are search behaviors,
+# so each test builds the exact corpus it asserts against; ambient fixtures would
+# quietly match those searches.

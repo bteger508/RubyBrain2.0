@@ -2,7 +2,7 @@ require "test_helper"
 
 class MemoriesControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @memory = memories(:one)
+    @memory = Memory.create!(title: "Brain deploys with Kamal", description: "One command.")
   end
 
   test "should get index" do
@@ -17,7 +17,7 @@ class MemoriesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create memory" do
     assert_difference("Memory.count") do
-      post memories_url, params: { memory: { archived: @memory.archived, description: @memory.description, forgotten: @memory.forgotten, last_recalled_at: @memory.last_recalled_at, recall_count: @memory.recall_count, superseded_by_id: @memory.superseded_by_id, title: @memory.title } }
+      post memories_url, params: { memory: { description: @memory.description, forgotten: @memory.forgotten, last_recalled_at: @memory.last_recalled_at, recall_count: @memory.recall_count, superseded_by_id: @memory.superseded_by_id, title: @memory.title } }
     end
 
     assert_redirected_to memory_url(Memory.last)
@@ -34,7 +34,7 @@ class MemoriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update memory" do
-    patch memory_url(@memory), params: { memory: { archived: @memory.archived, description: @memory.description, forgotten: @memory.forgotten, last_recalled_at: @memory.last_recalled_at, recall_count: @memory.recall_count, superseded_by_id: @memory.superseded_by_id, title: @memory.title } }
+    patch memory_url(@memory), params: { memory: { description: @memory.description, forgotten: @memory.forgotten, last_recalled_at: @memory.last_recalled_at, recall_count: @memory.recall_count, superseded_by_id: @memory.superseded_by_id, title: @memory.title } }
     assert_redirected_to memory_url(@memory)
   end
 

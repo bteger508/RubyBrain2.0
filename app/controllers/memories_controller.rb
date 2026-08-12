@@ -65,6 +65,6 @@ class MemoriesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def memory_params
-      params.expect(memory: [ :title, :description, :archived, :superseded_by_id, :forgotten, :last_recalled_at, :recall_count ])
+      params.expect(memory: [ :title, :description, :superseded_by_id, :forgotten, :last_recalled_at, :recall_count ])
     end
 end
