@@ -1,6 +1,14 @@
 require "test_helper"
 
 class MemoryTest < ActiveSupport::TestCase
+  # A provider that is having a bad day.
+  class FailingEmbedder < ApplicationEmbedder
+    private
+      def generate(*)
+        raise ApplicationEmbedder::Error, "provider unreachable"
+      end
+  end
+
   test "requires a title and a description" do
     memory = Memory.new
 
@@ -163,6 +171,76 @@ class MemoryTest < ActiveSupport::TestCase
 
     assert_empty Memory.recall(query: "elephants")
     assert_equal 0, memory.reload.recall_count
+  end
+
+  # Semantic recall
+
+  test "memories are embedded as they are stored" do
+    memory = create_memory(title: "Brain deploys with Kamal")
+
+    assert_equal ApplicationEmbedder::DIMENSIONS, memory.reload.embedding.size
+  end
+
+  test "re-embeds when the text changes" do
+    memory = create_memory(title: "Brain deploys with Kamal")
+    before = memory.reload.embedding
+
+    memory.update!(title: "Brain deploys with Capistrano")
+
+    assert_not_equal before, memory.reload.embedding
+  end
+
+  test "leaves the embedding alone when nothing embeddable changes" do
+    memory = create_memory(title: "Brain deploys with Kamal")
+    before = memory.reload.embedding
+
+    memory.update!(recall_count: 41)
+
+    assert_equal before, memory.reload.embedding
+  end
+
+  # websearch_to_tsquery ANDs its terms, so a query drawn from two memories
+  # matches neither. Only the semantic arm can answer this.
+  test "recall reaches memories full text search alone would miss" do
+    kamal = create_memory(title: "Brain deploys with Kamal")
+
+    assert_empty Memory.recallable.matching("Kamal timezone"), "precondition: full text should find nothing"
+    assert_includes Memory.recall(query: "Kamal timezone"), kamal
+  end
+
+  test "recall still answers an exact keyword" do
+    kamal = create_memory(title: "Brain deploys with Kamal")
+    create_memory(title: "Ben works in the Pacific timezone")
+
+    assert_equal [ kamal ], Memory.recall(query: "Kamal")
+  end
+
+  # Nearest-neighbour search always returns its k nearest rows however unrelated
+  # they are, so the distance floor is what keeps an unknown query honest.
+  test "recall returns nothing for a query about something Brain has not stored" do
+    create_memory(title: "Brain deploys with Kamal")
+
+    assert_empty Memory.recall(query: "elephants zebras")
+  end
+
+  test "recall falls back to full text when the embedder is down" do
+    kamal = create_memory(title: "Brain deploys with Kamal")
+
+    with_embedder(FailingEmbedder.new) do
+      assert_equal [ kamal ], Memory.recall(query: "Kamal")
+    end
+  end
+
+  test "a memory is still stored when the embedder is down" do
+    memory = nil
+
+    with_embedder(FailingEmbedder.new) do
+      memory = create_memory(title: "Brain deploys with Kamal")
+    end
+
+    assert memory.persisted?
+    assert_nil memory.reload.embedding
+    assert_equal [ memory ], Memory.recall(query: "Kamal"), "full text should still find it"
   end
 
   # Supersession and forgetting

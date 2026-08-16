@@ -26,12 +26,16 @@ services:
     restart: unless-stopped
 
   postgres:
-    image: postgres:16.1
+    # pgvector's image is stock postgres plus the vector extension, which
+    # Recall's semantic search needs.
+    image: pgvector/pgvector:pg18
     restart: unless-stopped
     networks:
     - default
     volumes:
-    - postgres-data:/var/lib/postgresql/data
+    # Postgres 18's image keeps its data in a major-version subdirectory, so the
+    # mount goes one level up from the 17-and-earlier /var/lib/postgresql/data.
+    - postgres-data:/var/lib/postgresql
     environment:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres

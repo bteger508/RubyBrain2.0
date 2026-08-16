@@ -22,5 +22,15 @@ module ActiveSupport
     def tool_text(response)
       response.content.first[:text]
     end
+
+    # Swaps the embedder for one test, so a case can exercise a provider outage
+    # without leaving the swap behind for whatever runs next in this process.
+    def with_embedder(embedder)
+      original = ApplicationEmbedder.current
+      ApplicationEmbedder.current = embedder
+      yield
+    ensure
+      ApplicationEmbedder.current = original
+    end
   end
 end

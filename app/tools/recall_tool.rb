@@ -1,7 +1,8 @@
-# Recall memories by keywords or time range.
+# Recall memories by meaning or time range.
 #
-# Matching is full-text over title and description, weighted so a keyword in the
-# title outranks the same keyword buried in a description.
+# Two searches answer every query and their rankings are fused: embeddings, which
+# match a memory that means the same thing in other words, and full text, which
+# catches the identifiers and error strings embeddings handle worst.
 class RecallTool < ApplicationTool
   # Guards against an agent asking for the entire corpus in one call.
   MAX_LIMIT = 50
@@ -11,7 +12,10 @@ class RecallTool < ApplicationTool
   tool_name "recall"
   title "Recall memories"
   description <<~TEXT
-    Recall memories by keyword, time range, or both. Omit the query to get the
+    Recall memories by meaning, time range, or both. Search by what you want to
+    know rather than by the words you expect to be stored: a question or a
+    description of the fact works better than a bare keyword, though exact terms
+    like identifiers and error strings still match. Omit the query to get the
     most recent memories. Memories that have been forgotten, or superseded by a
     newer version, are never returned. Recalling a memory counts as a use of it.
   TEXT
@@ -20,7 +24,7 @@ class RecallTool < ApplicationTool
     properties: {
       query: {
         type: "string",
-        description: "Keywords to match against titles and descriptions. Supports quoted phrases and -exclusions."
+        description: "What to search for, matched against titles and descriptions by meaning as well as by wording. A phrase or question works better than a single keyword."
       },
       from: {
         type: "string",

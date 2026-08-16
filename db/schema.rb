@@ -10,14 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_12_000736) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_15_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
+  enable_extension "vector"
 
   create_table "memories", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description", null: false
+    t.vector "embedding", limit: 1536
     t.boolean "forgotten", default: false, null: false
     t.datetime "last_recalled_at"
     t.integer "recall_count", default: 0, null: false
@@ -26,6 +28,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_12_000736) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["created_at"], name: "index_memories_on_created_at"
+    t.index ["embedding"], name: "index_memories_on_embedding_hnsw", opclass: :vector_cosine_ops, using: :hnsw
     t.index ["forgotten"], name: "index_memories_on_forgotten"
     t.index ["searchable"], name: "index_memories_on_searchable", using: :gin
     t.index ["superseded_by_id"], name: "index_memories_on_superseded_by_id"

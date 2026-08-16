@@ -14,3 +14,10 @@
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym "RESTful"
 # end
+
+# Zeitwerk would otherwise expect ruby_llm_embedder.rb to define RubyLlmEmbedder.
+# Scoped to the autoloader rather than declared as a global "LLM" acronym, which
+# would quietly recase every other inflection in the app.
+Rails.autoloaders.each do |autoloader|
+  autoloader.inflector.inflect("ruby_llm_embedder" => "RubyLLMEmbedder")
+end

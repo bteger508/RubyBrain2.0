@@ -19,6 +19,14 @@ gem "tailwindcss-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
+# One embeddings API across every provider, so Recall is not welded to one of
+# them [https://github.com/crmne/ruby_llm]
+gem "ruby_llm"
+
+# pgvector for Active Record: the vector column type and nearest-neighbour
+# search [https://github.com/ankane/neighbor]
+gem "neighbor"
+
 # Model Context Protocol server, how AI agents reach Brain [https://github.com/modelcontextprotocol/ruby-sdk]
 gem "mcp"
 
