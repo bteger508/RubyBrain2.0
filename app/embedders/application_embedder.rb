@@ -1,4 +1,4 @@
-# Turns text into a vector Recall can search by meaning rather than by keyword.
+# Turns text into a vector so Model.Recall() can search by meaning rather than by keyword.
 #
 # Provider differences — model names, request shape, batch limits, whether a
 # search query and a stored document should be embedded differently — are

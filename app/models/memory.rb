@@ -1,12 +1,4 @@
 class Memory < ApplicationRecord
-  # Trigram similarity above which two titles are treated as the same memory
-  # rephrased. Calibrated against real pairs: rephrasings land around 0.65-0.87,
-  # unrelated memories below 0.05.
-  #
-  # Note that trigrams are word-order blind, so "tabs over spaces" and "spaces
-  # over tabs" score 1.0 despite meaning the opposite. Semantic embeddings are
-  # the fix; until then, near_duplicates_of is the only place that assumption
-  # lives.
   SIMILARITY_THRESHOLD = 0.55
 
   DEFAULT_RECALL_LIMIT = 10
