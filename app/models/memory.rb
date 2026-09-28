@@ -24,7 +24,15 @@ class Memory < ApplicationRecord
     inverse_of: :superseded_by, dependent: :nullify
 
   validates :title, presence: true
+  validates :title, length: {
+    maximum: 120,
+    too_long: "Too long. A memory holds one fact. Split this into several record calls."
+  }
   validates :description, presence: true
+  validates :description, length: {
+    maximum: 600,
+    too_long: "Too long. A memory holds one fact. Split this into several record calls."
+  }
 
   # Kept current on every write rather than only in record!, so a memory created
   # any other way is still recallable.

@@ -15,11 +15,13 @@ class RecordTool < ApplicationTool
     properties: {
       title: {
         type: "string",
-        description: "Short, self-contained summary of the memory. Near-duplicate detection compares titles, so state the fact here rather than a label for it."
+        description: "The fact itself, in one sentence.",
+        maxLength: 120
       },
       description: {
         type: "string",
-        description: "Full detail of what happened or what was learned."
+        description: "Why it's true, its source, and when it was confirmed. 1–3 sentences. Don't add other facts.",
+        maxLength: 600
       }
     },
     required: [ "title", "description" ]

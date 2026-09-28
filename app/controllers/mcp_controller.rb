@@ -26,8 +26,10 @@ class McpController < ActionController::API
         title: "Brain",
         version: Brain::VERSION,
         instructions: <<~TEXT,
-          Brain is your long-term memory. Recall before you assume, and record
-          anything worth carrying into a later session.
+          Brain is your long-term memory. Recall before you assume.
+          Each memory holds one fact that could change on its own: a decision, a date, a person's role, a rule. The title states the fact ("PayGo PC go-live is January 2027"), not a topic ("PayGo decisions").
+          Before recording, recall the fact's subject. If a memory already holds it, update that memory; don't restate the fact inside another one. Refer to other memories by id instead of copying what they say.
+          Split a report into several memories rather than recording it whole.
         TEXT
         tools: TOOLS
       )
