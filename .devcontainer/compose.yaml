@@ -7,9 +7,8 @@ services:
       dockerfile: .devcontainer/Dockerfile
 
     volumes:
-    - ..:/workspaces/RubyBrain2.0:cached
-
-    # Overrides default command so things don't shut down after the process ends.
+      - ..:/workspaces/RubyBrain2.0:cached
+      # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
 
     # Uncomment the next line to use a non-root user for all processes.
@@ -18,8 +17,8 @@ services:
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
     depends_on:
-    - selenium
-    - postgres
+      - selenium
+      - postgres
 
   selenium:
     image: selenium/standalone-chromium
@@ -31,14 +30,36 @@ services:
     image: pgvector/pgvector:pg18
     restart: unless-stopped
     networks:
-    - default
+      - default
     volumes:
-    # Postgres 18's image keeps its data in a major-version subdirectory, so the
-    # mount goes one level up from the 17-and-earlier /var/lib/postgresql/data.
-    - postgres-data:/var/lib/postgresql
+      # Postgres 18's image keeps its data in a major-version subdirectory, so the
+      # mount goes one level up from the 17-and-earlier /var/lib/postgresql/data.
+      - postgres-data:/var/lib/postgresql
     environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+    command: >
+      sh -c '
+        ollama serve &
+        pid=$$!
+        until ollama list >/dev/null 2>&1; do
+          sleep 1
+        done
+        ollama pull qwen3-embedding:0.6b
+        wait $$pid
+      '
+    restart: unless-stopped
 
 volumes:
   postgres-data:
+  ollama-data:
